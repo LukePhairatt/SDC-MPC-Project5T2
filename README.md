@@ -46,22 +46,22 @@ The cost terms to be minimised in order to achieve the optimal solution (e.g. sm
 Further to the errors, there are a set of hyper-parameters to be tuned in the implementation for the good performance. These include 
 
 Weight the error terms, this indicates how much we want to signify the errors.  
-etc_weight   = 4.0;  
-epsi_weight  = 2.0;  
+**etc_weight**   = 4.0;  
+**epsi_weight**  = 2.0;  
 
 Weight the actuator outputs, this indicates how much we want to penalise the outputs.  
-steering_penalise = 25000.0;  
-throttle_penalise  = 1.0;  
-steering_rate_penalise = 50000.0;  
-throttle_rate_penalise  = 2000.0;  
+**steering_penalise** = 25000.0;  
+**throttle_penalise**  = 1.0;  
+**steering_rate_penalise** = 50000.0;  
+**throttle_rate_penalise**  = 2000.0;  
 
 These numbers are derived from the experimentations.
 
 _Model constraints (from the update equations):_ 
 It is ideal to have these equations to be close to 0 where prediction of the next state is actually close to the actual state possible. 
-
+	
 	x[t+1] -  (x[t] + v[t] * cos(psi[t]) * dt)			= 0  
-      	y[t+1] -  (y[t] + v[t] * sin(psi[t]) * dt) 			= 0  
+	y[t+1] -  (y[t] + v[t] * sin(psi[t]) * dt) 			= 0  
       	psi[t+1]  -  (psi[t] - v[t] / Lf * delta[t] * dt)		= 0  
       	v[t+1] - (v[t] + a[t] * dt)					= 0  
       	cte[t+1]  -  (f(x[t]) - y[t] + v[t] * sin(epsi[t]) * dt) 	= 0  
@@ -72,25 +72,25 @@ All are set to 0, except the first initial point which is initialised to the ini
 ### Timestep Length and Elapsed Duration (N & dt)
 Based on the experimentations, the value of N=15, and dt=0.05 gave the best result on this implementation. These parameters control how far ahead we want to look to the horizon. It has been observed that by looking too far ahead, the next corner (which is far ahead) might affect the vehicle path to turn too early. However, by looking too near a distance, this might not be enough for the vehicle to act upon the coming corner. For the experimentation, these sets of parameters were tried,
 	
-Too short look ahead (failed to turn)
-	N = 10 and dt = 0.01, 0.02, 0.03
-	N = 15 and dt = 0.01, 0.02, 0.03
+Too short look ahead (failed to turn)  
+	N = 10 and dt = 0.01, 0.02, 0.03  
+	N = 15 and dt = 0.01, 0.02, 0.03  
 	
-Too long look ahead (turned too quickly before the coming corner, and sometime it went off track)
-	N = 15 and dt = 0.08, 0.1, 
-	N = 20 and dt = 0.05, 0.08, 0.1
-	N = 25 and dt = 0.03, 0.05, 0.1
+Too long look ahead (turned too quickly before the coming corner, and sometime it went off track)  
+	N = 15 and dt = 0.08, 0.1   
+	N = 20 and dt = 0.05, 0.08, 0.1  
+	N = 25 and dt = 0.03, 0.05, 0.1  
 
 
 ### Polynomial Fitting and MPC Preprocessing
 The given waypoints sent from the simulator are transformed to the vehicle frame before fitting with the polynomial function to ease computation of the update equations and stability of polynomial fitting as well as sending out the resulting waypoints and predicted points to the simulator. The transform equation is given by (main.cpp 172-178 lines):
-
+	
 	ptsx_v = (ptsx-px) * cos(psi) + (ptsy-py)*sin(psi)  
-        ptsy_v = -(ptsx-px) *sin(psi) + (ptsy-py)*cos(psi)   
+	ptsy_v = -(ptsx-px) *sin(psi) + (ptsy-py)*cos(psi)  
 
 	where 	px,py,psi is the current vehicle pose  
-		ptsx, ptsy is the given waypoints in the world coordinate    
-           	ptsx_v, ptsy_v is the given waypoints in the vehicle frame  
+		ptsx, ptsy is the given waypoints in the world coordinate  
+		ptsx_v, ptsy_v is the given waypoints in the vehicle frame  
 
 
 The reference path is then generated with the 3rd order polynomial function to suit this track on the twist and turn corners. 
@@ -106,6 +106,7 @@ _Reference speeds:_
 
 The set point velocities on this track are predetermined from the track layout in the given waypoint log file (“lake_track_velocity.csv”). The reference the speed is then past to the MPC model for a variable speed control on the track. In the implementation, the log file is read into the x,y waypoint along with the expected velocity. During each motion step, the vehicle is localised to nearest waypoint to get the predefined target speed (see main.cpp 155-157 lines). The code for reading the log file is in track.cpp.
 
+**main.cpp**
 /* read track data- waypoints and predefined speeds*/
 std::string filename = "../lake_track_velocity.csv";
 ThrottleMapping lake_track; 
@@ -127,19 +128,21 @@ In oder to deal with the control latency, the vehicle state is set to the next p
 In the vehicle frame, at the current (initial) state: psi(heading)=0, x=0, y=0, v=v, a=a. The state update will only be in the x-direction, so no change in the y-position. 
 
 The update equations in the vehicle frame are given by:  
-time_lag  = latency time  
-px_next   = v*time_lag;  
-py_next   = 0.0;  
-psi_next  = 0.0 - v*steering_angle*deg2rad(25)*time_lag/Lf;   
-v_next    =  v + a*time_lag;   
-cte_next  = polyeval(coeffs, px_next) - py_next;  
-epsi_next= psi_next - atan(coeffs[1] + 2*coeffs[2]*px_next + 3*coeffs[3]*pow(px_next, 2));   
+	time_lag  = latency time  
+	px_next   = v*time_lag;  
+	py_next   = 0.0;  
+	psi_next  = 0.0 - v*steering_angle*deg2rad(25)*time_lag/Lf;  
+	v_next    =  v + a*time_lag;  
+	cte_next  = polyeval(coeffs, px_next) - py_next;  
+	epsi_next= psi_next - atan(coeffs[1] + 2*coeffs[2]*px_next + 3*coeffs[3]*pow(px_next, 2));   
 
 NOTE: 	at any moment in time, we define the error terms with
 	cte  = y_pred - y_actual
        	epsi = psi_actual - psi_pred
 
-  	the steering angle needs to be rescaled from -1 to 1 radian (simulator limit) to the 		limited values as defined in the MPC 	variable boundary (-0.436 to 0.436 radian or -25 to 		25 degree). However, the steering from the MPC solution will be rescaled back to [-1, 1] 		before sending it to the simulator.    
+  	the steering angle needs to be rescaled from -1 to 1 radian (simulator limit) to the limited values as defined in the MPC variable boundary 		(-0.436 to 0.436 radian or -25 to 25 degree).  
+	However, the steering from the MPC solution will be rescaled back to [-1, 1] before sending it to the simulator.    
+
 
 ## Dependencies
 
