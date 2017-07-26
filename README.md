@@ -82,11 +82,11 @@ All are set to 0, except the first initial point which is initialised to the ini
 ### Timestep Length and Elapsed Duration (N & dt)
 Based on the experimentations, the value of N=15, and dt=0.05 gave the best result on this implementation. These parameters control how far ahead we want to look to the horizon. It has been observed that by looking too far ahead, the next corner (which is far ahead) might affect the vehicle path to turn too early. However, by looking too near a distance, this might not be enough for the vehicle to act upon the coming corner. For the experimentation, these sets of parameters were tried,
 	
-Too short look ahead (failed to turn)
+Too short look ahead (failed to turn)  
 	N = 10 and dt = 0.01, 0.02, 0.03  
 	N = 15 and dt = 0.01, 0.02, 0.03
 
-Too long look ahead (turned too quickly before the coming corner, and sometime it went off track)
+Too long look ahead (turned too quickly before the coming corner, and sometime it went off track)  
 	N = 15 and dt = 0.08, 0.1   
 	N = 20 and dt = 0.05, 0.08, 0.1  
 	N = 25 and dt = 0.03, 0.05, 0.1  
