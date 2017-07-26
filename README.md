@@ -15,24 +15,24 @@ Note: the simulator steering CW is + and CCW is - (so the motion model is adjust
 
 _Update equations for the states and errors:_
 	
-x[t+1] 	    = x[t] + v[t] * cos(psi[t]) * dt			// x-position  
-y[t+1]      = y[t] + v[t] * sin(psi[t]) * dt 			// y-position  
-psi[t+1]    = psi[t] - v[t] / Lf * delta[t] * dt		// heading  
-v[t+1]      = v[t] + a[t] * dt					// speed  
-cte[t+1]    = f(x[t]) - y[t] + v[t] * sin(epsi[t]) * dt		// cross-track error  
-epsi[t+1]   = psi[t] - psides[t] - v[t] * delta[t] / Lf * dt	// orientation error
+	x[t+1] 	    = x[t] + v[t] * cos(psi[t]) * dt			// x-position  
+	y[t+1]      = y[t] + v[t] * sin(psi[t]) * dt 			// y-position  
+	psi[t+1]    = psi[t] - v[t] / Lf * delta[t] * dt		// heading  
+	v[t+1]      = v[t] + a[t] * dt					// speed  
+	cte[t+1]    = f(x[t]) - y[t] + v[t] * sin(epsi[t]) * dt		// cross-track error  
+	epsi[t+1]   = psi[t] - psides[t] - v[t] * delta[t] / Lf * dt	// orientation error
 
-where
-	dt: a time step
-	delta: a steering angle
-	a: an acceleration/throttle 
-	f(x): a predicted y position at x from a waypoint polynomial fitting 
-	psides: a predict heading at x from a waypoint polynomial fitting 
-	Lf: the vehicle steering length (estimated from a steering point to CG)
+	where
+		dt: a time step
+		delta: a steering angle
+		a: an acceleration/throttle 
+		f(x): a predicted y position at x from a waypoint polynomial fitting 
+		psides: a predict heading at x from a waypoint polynomial fitting 
+		Lf: the vehicle steering length (estimated from a steering point to CG)
 		
-Note:   for this project, the error terms are defined as follows 
-	cte  = y_predict  - y_actual
-	epsi = psi_actual - psi_predict
+	Note:   for this project, the error terms are defined as follows 
+		cte  = y_predict  - y_actual
+		epsi = psi_actual - psi_predict
 
 The optimal control outputs (steering and throttle) are computed by solving the update equations defined as above. This project uses **Ipopt** solver package for the optimisation of non-linear problem with the  MPC state variables (x, y, psi,v, cte, epsi, delta, a) and the following per-defined costs and constraints.
 
