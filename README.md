@@ -101,8 +101,10 @@ The reference path is sent to the MPC solver by the polynomial coefficients alon
 	
 _Reference speeds:_
 
-![track][image1] _Track layout_
-![speed][image2] _Set point speed_
+![track][image1] 
+_Track layout_
+![speed][image2] 
+_Set point speed_
 
 The set point velocities on this track are predetermined from the track layout in the given waypoint log file (“lake_track_velocity.csv”). The reference the speed is then past to the MPC model for a variable speed control on the track. In the implementation, the log file is read into the x,y waypoint along with the expected velocity. During each motion step, the vehicle is localised to nearest waypoint to get the predefined target speed (see main.cpp 155-157 lines). The code for reading the log file is in track.cpp.
 
@@ -127,7 +129,8 @@ In oder to deal with the control latency, the vehicle state is set to the next p
 
 In the vehicle frame, at the current (initial) state: psi(heading)=0, x=0, y=0, v=v, a=a. The state update will only be in the x-direction, so no change in the y-position. 
 
-The update equations in the vehicle frame are given by:  
+The update equations in the vehicle frame are given by:
+
 	time_lag  = latency time  
 	px_next   = v*time_lag;  
 	py_next   = 0.0;  
