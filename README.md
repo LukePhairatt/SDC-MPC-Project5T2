@@ -9,6 +9,15 @@ Self-Driving Car Engineer Nanodegree Program
 [image2]: ./result/setpoint_velocity.png "speed"
 [video0]: ./result/MPC.mp4 "video"
 
+The project was tested on this simulator configuration.
+
+Version: 145  
+Graphic: 1024 x 768  
+Quality: fast, simple, good, fantastic  
+Estimated message time: ~ 0.1-0.2 second  
+
+However, it should works on any configuration and machines, provided the I/O message is not severely delayed.
+
 
 ### The Control Model 
 Note: the simulator steering CW is + and CCW is - (so the motion model is adjusted to this steering convention)
@@ -103,10 +112,10 @@ The reference path is sent to the MPC solver by the polynomial coefficients alon
 _Reference speeds:_
 
 ![track][image1]   
-_Track layout_
+                              _Track layout_
 
 ![speed][image2]   
-_Set point speed_
+                              _Set point speed_
 
 The set point velocities on this track are predetermined from the track layout in the given waypoint log file (“lake_track_velocity.csv”). The reference the speed is then past to the MPC model for a variable speed control on the track. In the implementation, the log file is read into the x,y waypoint along with the expected velocity. During each motion step, the vehicle is localised to nearest waypoint to get the predefined target speed (see main.cpp 155-157 lines). The code for reading the log file is in track.cpp.
 
