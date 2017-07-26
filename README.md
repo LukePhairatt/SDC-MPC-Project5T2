@@ -1,25 +1,26 @@
 # **Model Predictive Control(MPC) Project-5 Term-2**
 Self-Driving Car Engineer Nanodegree Program
 ![project][image0]
+---
 
 [//]: # (Image References)
 [image0]: ./result/capture.png "result"
 [image1]: ./result/track_waypoints.png "track"
 [image2]: ./result/setpoint_velocity.png "speed"
 [video0]: ./result/MPC.mp4 "video"
----
+
 
 ### The Control Model 
 Note: the simulator steering CW is + and CCW is - (so the motion model is adjusted to this steering convention)
 
 _Update equations for the states and errors:_
 	
-      	x[t+1] 	    = x[t] + v[t] * cos(psi[t]) * dt			// x-position  
+	x[t+1] 	    = x[t] + v[t] * cos(psi[t]) * dt			// x-position  
       	y[t+1]      = y[t] + v[t] * sin(psi[t]) * dt 			// y-position  
       	psi[t+1]    = psi[t] - v[t] / Lf * delta[t] * dt		// heading  
       	v[t+1]      = v[t] + a[t] * dt					// speed  
       	cte[t+1]    = f(x[t]) - y[t] + v[t] * sin(epsi[t]) * dt		// cross-track error  
-      	epsi[t+1]   = psi[t] - psides[t] - v[t] * delta[t] / Lf * dt	// orientation error  
+      	epsi[t+1]   = psi[t] - psides[t] - v[t] * delta[t] / Lf * dt	// orientation error
 
 	where
 		dt: a time step
@@ -31,7 +32,7 @@ _Update equations for the states and errors:_
 		
  	Note:   for this project, the error terms are defined as follows 
 		cte  = y_predict  - y_actual
-      		epsi = psi_actual - psi_predict
+		epsi = psi_actual - psi_predict
 
 The optimal control outputs (steering and throttle) are computed by solving the update equations defined as above. This project uses **Ipopt** solver package for the optimisation of non-linear problem with the  MPC state variables (x, y, psi,v, cte, epsi, delta, a) and the following per-defined costs and constraints.
 
@@ -98,7 +99,8 @@ The reference path is then generated with the 3rd order polynomial function to s
 
 The reference path is sent to the MPC solver by the polynomial coefficients along with the predicted vehicle state (due to 100 ms latency in the control outputs, see next section for details). 
 	
-Reference speeds:
+_Reference speeds:_
+
 ![track][image1] _Track layout_
 ![speed][image2] _Set point speed_
 
