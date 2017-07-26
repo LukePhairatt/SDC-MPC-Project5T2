@@ -57,9 +57,10 @@ Weight the actuator outputs, this indicates how much we want to penalise the out
 
 These numbers are derived from the experimentations.
 
-_Model constraints (from the update equations):_ 
-It is ideal to have these equations to be close to 0 where prediction of the next state is actually close to the actual state possible. 
-	
+_Model constraints (from the update equations):_
+
+It is ideal to have these equations to be close to 0 where prediction of the next state is actually close to the actual state possible.
+
 	x[t+1] -  (x[t] + v[t] * cos(psi[t]) * dt)			= 0  
 	y[t+1] -  (y[t] + v[t] * sin(psi[t]) * dt) 			= 0  
       	psi[t+1]  -  (psi[t] - v[t] / Lf * delta[t] * dt)		= 0  
@@ -72,11 +73,11 @@ All are set to 0, except the first initial point which is initialised to the ini
 ### Timestep Length and Elapsed Duration (N & dt)
 Based on the experimentations, the value of N=15, and dt=0.05 gave the best result on this implementation. These parameters control how far ahead we want to look to the horizon. It has been observed that by looking too far ahead, the next corner (which is far ahead) might affect the vehicle path to turn too early. However, by looking too near a distance, this might not be enough for the vehicle to act upon the coming corner. For the experimentation, these sets of parameters were tried,
 	
-Too short look ahead (failed to turn)  
+Too short look ahead (failed to turn)
 	N = 10 and dt = 0.01, 0.02, 0.03  
-	N = 15 and dt = 0.01, 0.02, 0.03  
-	
-Too long look ahead (turned too quickly before the coming corner, and sometime it went off track)  
+	N = 15 and dt = 0.01, 0.02, 0.03
+
+Too long look ahead (turned too quickly before the coming corner, and sometime it went off track)
 	N = 15 and dt = 0.08, 0.1   
 	N = 20 and dt = 0.05, 0.08, 0.1  
 	N = 25 and dt = 0.03, 0.05, 0.1  
@@ -101,27 +102,29 @@ The reference path is sent to the MPC solver by the polynomial coefficients alon
 	
 _Reference speeds:_
 
-![track][image1] 
+![track][image1]   
 _Track layout_
-![speed][image2] 
+
+![speed][image2]   
 _Set point speed_
 
 The set point velocities on this track are predetermined from the track layout in the given waypoint log file (“lake_track_velocity.csv”). The reference the speed is then past to the MPC model for a variable speed control on the track. In the implementation, the log file is read into the x,y waypoint along with the expected velocity. During each motion step, the vehicle is localised to nearest waypoint to get the predefined target speed (see main.cpp 155-157 lines). The code for reading the log file is in track.cpp.
 
 **main.cpp**
-/* read track data- waypoints and predefined speeds*/
-std::string filename = "../lake_track_velocity.csv";
-ThrottleMapping lake_track; 
+
+/* read track data- waypoints and predefined speeds*/  
+std::string filename = "../lake_track_velocity.csv";  
+ThrottleMapping lake_track;  
 lake_track.ReadTrackData(filename);
 
-/* get the vehicle current location closest to the waypoint */
-int idx_map = lake_track.GetLocation(px,py);  
-   
-/* get the desire speed */     
+/* get the vehicle current location closest to the waypoint */  
+int idx_map = lake_track.GetLocation(px,py);
+
+/* get the desire speed */  
 double expect_velocity = lake_track.GetTrackVelocity(idx_map);
 
-/* pass to mpc solver */
-double target_speed = expect_velocity;
+/* pass to mpc solver */  
+double target_speed = expect_velocity;  
 vector<double> mpc_solution = mpc.Solve(state, coeffs, target_speed);
 
 ### Model Predictive Control with Latency
@@ -144,8 +147,9 @@ The update equations in the vehicle frame are given by:
 	cte  = y_pred - y_actual  
 	epsi = psi_actual - psi_pred  
 
-  	the steering angle needs to be rescaled from -1 to 1 radian (simulator limit) to the limited values as defined in the MPC variable boundary 		(-0.436 to 0.436 radian or -25 to 25 degree).  
-	However, the steering from the MPC solution will be rescaled back to [-1, 1] before sending it to the simulator.    
+  	the steering angle needs to be rescaled from -1 to 1 radian (simulator limit) to the limited values  
+	as defined in the MPC variable boundary (-0.436 to 0.436 radian or -25 to 25 degree). However, the steering  
+ 	from the MPC solution will be rescaled back to [-1, 1] before sending it to the simulator.    
 
 
 ## Dependencies
