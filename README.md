@@ -134,11 +134,12 @@ The update equations in the vehicle frame are given by:
 	psi_next  = 0.0 - v*steering_angle*deg2rad(25)*time_lag/Lf;  
 	v_next    =  v + a*time_lag;  
 	cte_next  = polyeval(coeffs, px_next) - py_next;  
-	epsi_next= psi_next - atan(coeffs[1] + 2*coeffs[2]*px_next + 3*coeffs[3]*pow(px_next, 2));   
+	epsi_next= psi_next - atan(coeffs[1] + 2*coeffs[2]*px_next + 3*coeffs[3]*pow(px_next, 2));  
 
-NOTE: 	at any moment in time, we define the error terms with
-	cte  = y_pred - y_actual
-       	epsi = psi_actual - psi_pred
+	NOTE: 	
+	at any moment in time, we define the error terms with  
+	cte  = y_pred - y_actual  
+	epsi = psi_actual - psi_pred  
 
   	the steering angle needs to be rescaled from -1 to 1 radian (simulator limit) to the limited values as defined in the MPC variable boundary 		(-0.436 to 0.436 radian or -25 to 25 degree).  
 	However, the steering from the MPC solution will be rescaled back to [-1, 1] before sending it to the simulator.    
