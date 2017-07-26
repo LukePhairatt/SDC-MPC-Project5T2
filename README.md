@@ -59,14 +59,14 @@ These numbers are derived from the experimentations.
 
 _Model constraints (from the update equations):_
 
-It is ideal to have these equations to be close to 0 where prediction of the next state is actually close to the actual state possible.
+It is ideal to have these equations to be close to 0 where prediction of the next state is actually close to the actual state possible.  
 
 	x[t+1] -  (x[t] + v[t] * cos(psi[t]) * dt)			= 0  
 	y[t+1] -  (y[t] + v[t] * sin(psi[t]) * dt) 			= 0  
-      	psi[t+1]  -  (psi[t] - v[t] / Lf * delta[t] * dt)		= 0  
-      	v[t+1] - (v[t] + a[t] * dt)					= 0  
-      	cte[t+1]  -  (f(x[t]) - y[t] + v[t] * sin(epsi[t]) * dt) 	= 0  
-      	epsi[t+1] - (psi[t] - psides[t] - v[t] * delta[t] / Lf * dt) 	= 0  
+	psi[t+1]  -  (psi[t] - v[t] / Lf * delta[t] * dt)		= 0  
+	v[t+1] - (v[t] + a[t] * dt)					= 0  
+	cte[t+1]  -  (f(x[t]) - y[t] + v[t] * sin(epsi[t]) * dt) 	= 0  
+	epsi[t+1] - (psi[t] - psides[t] - v[t] * delta[t] / Lf * dt) 	= 0  
 
 All are set to 0, except the first initial point which is initialised to the initial state (MPC.cpp 131-138 lines). The boundary of the state variables, outputs and model constraints are defined in the MPC::Solve function (MPC.cpp  151-231 lines). In this project, the steering and throttle value are limited to -1 to +1. 
 
