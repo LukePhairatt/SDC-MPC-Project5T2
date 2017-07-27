@@ -164,4 +164,7 @@ The update equations in the vehicle frame are given by:
   	the steering from the MPC solution will be rescaled to [-1, 1] before sending it to the simulator.    
 
 
+### result
+![video][video0]
+
 
