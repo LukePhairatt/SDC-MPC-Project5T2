@@ -18,18 +18,18 @@ const double Lf = 2.67;
 // Set the timestep length and duration
 // Looking too far ahead (twist and turn) might affect the next predict path e.g. off road to accomodate the next turn
 // Looking too near distance might not be enough to accomodate twist and turn particularly at high speed 
-const size_t N = 15;
-const double dt = 0.05;
+const size_t N = 10;
+const double dt = 0.1;
 
 // Error terms cost factor (this will amplify small errors)
-const double etc_weight = 4.0;
-const double epsi_weight = 2.0;
+const double etc_weight = 2000.0;             // 2000
+const double epsi_weight= 1800.0;             // 1800
 
 // Steering and throttle control cost factor (this will penalise output)
-const double steering_penalise = 25000.0;       // need less sensity steering to reduce error terms (cte,epsi)      
-const double throttle_penalise = 1.0;
-const double steering_rate_penalise = 50000.0;  // penalise big change for smoother drives, no big change in steering  
-const double throttle_rate_penalise = 2000.0;   // (if not penalise much it will break more often, allow big changes)
+const double steering_penalise = 20.0;        // 20 need less sensity steering to reduce error terms (cte,epsi)      
+const double throttle_penalise = 10.0;        // 10
+const double steering_rate_penalise = 400.0;  // 400 penalise big change for smoother drives, no big change in steering  
+const double throttle_rate_penalise = 20.0;   // 20 (if not penalise much it will break more often, allow big changes)
 
 // Solver variable array indexing
 const size_t x_start = 0;

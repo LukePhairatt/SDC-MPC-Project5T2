@@ -56,8 +56,7 @@ double polyeval(Eigen::VectorXd coeffs, double x) {
 // Fit a polynomial.
 // Adapted from
 // https://github.com/JuliaMath/Polynomials.jl/blob/master/src/Polynomials.jl#L676-L716
-Eigen::VectorXd polyfit(Eigen::VectorXd xvals, Eigen::VectorXd yvals,
-                        int order) {
+Eigen::VectorXd polyfit(const Eigen::VectorXd& xvals, const Eigen::VectorXd& yvals,int order) {
   assert(xvals.size() == yvals.size());
   assert(order >= 1 && order <= xvals.size() - 1);
   Eigen::MatrixXd A(xvals.size(), order + 1);
@@ -121,7 +120,6 @@ int main() {
   MPC mpc;
   
   // Track speed mapping and Waypoints generator 	 
-  //std::string filename = "../lake_track_waypoints_velocity.csv";
   std::string filename = "../lake_track_velocity.csv";
   ThrottleMapping lake_track; 
   lake_track.ReadTrackData(filename);
@@ -152,7 +150,7 @@ int main() {
           /*
              Get waypoint velocity from the current location
           */
-          int idx_map = lake_track.GetLocation(px,py);          
+          int idx_map = lake_track.GetLocation(px,py);                    
           double expect_velocity = lake_track.GetTrackVelocity(idx_map);
           std::cout << "Set speed = " << expect_velocity << std::endl;		 
 		  
@@ -190,7 +188,7 @@ int main() {
                Both are in between [-1, 1].
           */	
 		 
-		  // Road is curvy so a polynomial fit with order 3
+		  // Road is curvy so a polynomial fit with order 3, 2nd would do also
           auto coeffs = polyfit(ptsx_v, ptsy_v, 3);
           
           /* NOTE:
@@ -214,7 +212,7 @@ int main() {
           // predicte next state what will be
           double px_next   = v*time_lag;                                // only move in x vehicle frame
           double py_next   = 0.0;                                       // no change in y so 0.0 as y initial
-          double psi_next  = -v*steering_angle*deg2rad(25)*time_lag/Lf; // rescale steering from [-1,1] radian to 25 degree radian
+          double psi_next  = -v*steering_angle*time_lag/Lf; 			// intial heading is 0.0 
           double cte_next  = polyeval(coeffs, px_next);                 // see A, evaluated at the next position where y_next = py_next = 0.0 
           double v_next    = v + at;                                    // next speed prediction
           double epsi_next = psi_next - CppAD::atan(coeffs[1] + 2*coeffs[2]*px_next + 3*coeffs[3]*CppAD::pow(px_next, 2)); // see B, diff of 3rd order
@@ -224,7 +222,9 @@ int main() {
           // Predict the optimal controls 
           // mpc_solution: [cost,steering,throttle,x0,y0,x1,y1,........xn,yn]
           // length: 2*N + 3
-          double target_speed = expect_velocity;
+          // we can set speed from throttle mapping (read log file), or just set the maximum speed boundary
+          // however, we need to change hyperparams in MCP.h as well
+          double target_speed = expect_velocity;//80
           vector<double> mpc_solution = mpc.Solve(state, coeffs, target_speed);
           double cost = mpc_solution[0];
           double steer_value = mpc_solution[1];
@@ -240,7 +240,7 @@ int main() {
 		  
 		  // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
           // Otherwise the values will be in between [-deg2rad(25), deg2rad(25] instead of [-1, 1].
-          steer_value = steer_value/deg2rad(25);
+          steer_value = steer_value/(deg2rad(25)*Lf);
 		  old_outputs = {epsi_next, throttle_value};
 		  
 		  // message I/O
@@ -267,10 +267,20 @@ int main() {
           // Display the waypoints/reference line
           // the points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Yellow line
-          // Waypoints provided by the simulator
-          // copy from the eigen vector to the std vector
-          vector<double> next_x_vals(&ptsx_v[0], ptsx_v.data()+ptsx_v.cols()*ptsx_v.rows());
-          vector<double> next_y_vals(&ptsy_v[0], ptsy_v.data()+ptsy_v.cols()*ptsy_v.rows());
+          
+          // 1-Waypoints provided by the simulator::copy from the eigen vector to the std vector
+          //vector<double> next_x_vals(&ptsx_v[0], ptsx_v.data()+ptsx_v.cols()*ptsx_v.rows());
+          //vector<double> next_y_vals(&ptsy_v[0], ptsy_v.data()+ptsy_v.cols()*ptsy_v.rows());
+          
+          // 2-Or generate it from polyfit for better visualisation
+          const double poly_inc = 2.5;
+          const int num_points = 25;
+          vector<double> next_x_vals;
+          vector<double> next_y_vals;
+          for(int i=0;i<num_points;i++){
+		    next_x_vals.push_back(poly_inc*i);
+		    next_y_vals.push_back(polyeval(coeffs,poly_inc*i));
+		  }
 
           msgJson["next_x"] = next_x_vals;
           msgJson["next_y"] = next_y_vals;

@@ -1,0 +1,27 @@
+Predefined variable track speed
+---------------------------------------------------
+const size_t N = 10;
+const double dt = 0.1;
+
+const double etc_weight = 2000.0;             
+const double epsi_weight= 1800.0;             
+
+const double steering_penalise = 20.0;              
+const double throttle_penalise = 10.0;        
+const double steering_rate_penalise = 400.0; 
+const double throttle_rate_penalise = 20.0;   
+
+
+
+Constant max speed of 80 mph
+---------------------------------------------------
+const size_t N = 10;
+const double dt = 0.1;
+
+const double etc_weight = 2000.0;             
+const double epsi_weight= 1800.0;             
+
+const double steering_penalise = 25.0;              
+const double throttle_penalise = 10.0;        
+const double steering_rate_penalise = 30.0; 
+const double throttle_rate_penalise = 10.0; 

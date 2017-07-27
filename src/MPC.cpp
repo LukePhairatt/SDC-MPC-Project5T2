@@ -101,7 +101,7 @@ class FG_eval {
       // 3rd order polynomial
       AD<double> f0 = coeffs[0] + coeffs[1]*x0 + coeffs[2]*CppAD::pow(x0, 2) + coeffs[3]*CppAD::pow(x0, 3);
       // My note: getting angle from  atan of slope
-      AD<double> psides0 = CppAD::atan(coeffs[1] + 2*coeffs[2] + 3*coeffs[3]*CppAD::pow(x0, 2));
+      AD<double> psides0 = CppAD::atan(coeffs[1] + 2*coeffs[2]*x0 + 3*coeffs[3]*CppAD::pow(x0, 2));
       
       
 
@@ -196,8 +196,8 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs, double 
   // The upper and lower limits of delta are set to -25 and 25		// e.g. input steering angle 
   // degrees (values in radians).
   for (int i = delta_start; i < a_start; i++) {
-    vars_lowerbound[i] = -0.436332;
-    vars_upperbound[i] = 0.436332;
+    vars_lowerbound[i] = -0.436332*Lf;
+    vars_upperbound[i] = 0.436332*Lf;
   }
 
   // Acceleration/decceleration upper and lower limits. 			// e.g. input acceleration
@@ -251,7 +251,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs, double 
   options += "Sparse  true        reverse\n";
   // NOTE: Currently the solver has a maximum time limit of 0.5 seconds.
   // Change this as you see fit.
-  options += "Numeric max_cpu_time          0.5\n";
+  options += "Numeric max_cpu_time          1.0\n";
 
   // place to return solution
   CppAD::ipopt::solve_result<Dvector> solution;
