@@ -165,6 +165,6 @@ The update equations in the vehicle frame are given by:
 
 
 ### result
-![video][video0]
+[video](./result)
 
 
