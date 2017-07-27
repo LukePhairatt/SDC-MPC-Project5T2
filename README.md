@@ -7,7 +7,7 @@ Self-Driving Car Engineer Nanodegree Program
 [image0]: ./result/capture.png "result"
 [image1]: ./result/track_waypoints.png "track"
 [image2]: ./result/setpoint_velocity.png "speed"
-[video0]: ./result/MPC.mp4 "video"
+[video0]: ./result/MPC2.mp4 "video"
 
 The project was tested on this simulator configuration.
 
@@ -55,14 +55,14 @@ The cost terms to be minimised in order to achieve the optimal solution (e.g. sm
 Further to the errors, there are a set of hyper-parameters to be tuned in the implementation for the good performance. These include 
 
 Weight the error terms, this indicates how much we want to signify the errors.  
-**etc_weight**   = 4.0;  
-**epsi_weight**  = 2.0;  
+**etc_weight**   = 2000.0;  
+**epsi_weight**  = 1800.0;  
 
 Weight the actuator outputs, this indicates how much we want to penalise the outputs.  
-**steering_penalise** = 25000.0;  
-**throttle_penalise**  = 1.0;  
-**steering_rate_penalise** = 50000.0;  
-**throttle_rate_penalise**  = 2000.0;  
+**steering_penalise** = 20.0;  
+**throttle_penalise**  = 10.0;  
+**steering_rate_penalise** = 400.0;  
+**throttle_rate_penalise**  = 20.0;  
 
 These numbers are derived from the experimentations.
 
@@ -151,7 +151,7 @@ The update equations in the vehicle frame are given by:
 	time_lag  = latency time  
 	px_next   = v*time_lag;  
 	py_next   = 0.0;  
-	psi_next  = 0.0 - v*steering_angle*deg2rad(25)*time_lag/Lf;  
+	psi_next  = 0.0 - v*steering_angle*time_lag/Lf;  
 	v_next    =  v + a*time_lag;  
 	cte_next  = polyeval(coeffs, px_next) - py_next;  
 	epsi_next= psi_next - atan(coeffs[1] + 2*coeffs[2]*px_next + 3*coeffs[3]*pow(px_next, 2));  
@@ -161,9 +161,7 @@ The update equations in the vehicle frame are given by:
 	cte  = y_pred - y_actual  
 	epsi = psi_actual - psi_pred  
 
-  	the steering angle needs to be rescaled from -1 to 1 radian (simulator limit) to the limited values  
-	as defined in the MPC variable boundary (-0.436 to 0.436 radian or -25 to 25 degree). However, the steering  
- 	from the MPC solution will be rescaled back to [-1, 1] before sending it to the simulator.    
+  	the steering from the MPC solution will be rescaled to [-1, 1] before sending it to the simulator.    
 
 
 
